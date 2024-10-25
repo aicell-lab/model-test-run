@@ -7,4 +7,5 @@ class Config:
         workspace_name = "ModelTest"
         service_id = "model-testing"        
         client_id = "tester"
+        client_name = "MTest"
         TOKEN_VAR_NAME = "MTEST_SERVICE_TOKEN"
