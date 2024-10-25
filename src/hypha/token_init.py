@@ -5,19 +5,20 @@ from config import Config
 import jwt
 from datetime import datetime, timezone, timedelta
 
-def get_token_expiry(token):
+def decode_token(token):
     try:
         decoded_token = jwt.decode(token, options={"verify_signature": False})
-        exp_timestamp = decoded_token.get('exp')
-        if exp_timestamp:
-            expiry_time = datetime.fromtimestamp(exp_timestamp, timezone.utc)
-            return expiry_time
-        else:
-            print("No expiration info in the token")
-            return None
+        return decoded_token.get('exp')
     except jwt.DecodeError:
         print("Failed to decode token")
         return None
+
+def get_token_expiry(token):
+    exp_timestamp = decode_token(token)
+    if exp_timestamp:
+        return datetime.fromtimestamp(exp_timestamp, timezone.utc)
+    print("No expiration info in the token")
+    return None
     
 def get_time_left_in_minutes(expiry_time):
     current_time = datetime.now(timezone.utc)
