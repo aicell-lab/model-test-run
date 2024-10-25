@@ -45,12 +45,11 @@ def format_timedelta(td):
 
 def print_token_details(token):
     masked_token = f"{token[:5]}.....{token[-5:]}"
-    print(f"TOKEN IS: {masked_token}")
     expiration_date = get_token_expiry(token)
-    print(f"Expiration date: {expiration_date}")
     expiration_time_minutes = get_time_left_in_minutes(expiration_date)
     expiration_time = timedelta(minutes=expiration_time_minutes)
-    print(f"Expiration time: {format_timedelta(expiration_time)}")
+    expiration_time_formatted = format_timedelta(expiration_time)
+    print(f"Token: {masked_token} Exp. date: {expiration_date} Exp. time: {expiration_time_formatted}")
 
 def get_token():
     token = os.getenv(Config.Workspace.TOKEN_VAR_NAME, '')
