@@ -24,6 +24,17 @@ def get_time_left_in_minutes(expiry_time):
     current_time = datetime.now(timezone.utc)
     time_left = expiry_time - current_time
     return time_left.total_seconds() / 60 
+
+def print_remaining_time(remaining_minutes):
+    time_str = ''
+    if remaining_minutes < 1:
+        time_str = f"{remaining_minutes * 60:.0f} seconds"
+    elif remaining_minutes < 60:
+        time_str = f"{remaining_minutes:.2f} minutes"
+    else:
+        hours, minutes = divmod(remaining_minutes, 60)
+        time_str = f"{int(hours)} hours, {int(minutes)} minutes"
+    print(f"Remaining token time: {time_str}")
     
 def is_token_expired(token, buffer_minutes=5):
     expiry_time = get_token_expiry(token)
@@ -33,7 +44,7 @@ def is_token_expired(token, buffer_minutes=5):
             print(f"Token is expired or will expire in less than {buffer_minutes} minutes")
             return True
         else:
-            print(f"Token is still valid. Time left: {time_left:.2f} minutes")
+            print_remaining_time(remaining_minutes=time_left)
             return False
     else:
         return True

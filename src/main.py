@@ -12,6 +12,9 @@ async def main_loop():
     logging.info("main_loop()...")
     await register_services()
 
+    while True:
+        await asyncio.sleep(5)
+
 def init_logging():
     log_format = "[%(asctime)s] [%(levelname)s] %(message)s"
     date_format = "%Y-%m-%d %H:%M:%S"
