@@ -38,6 +38,9 @@ class ModelYaml:
         
     def get_weights_descr_class(self):
         return ModelYaml.FORMAT_TO_WEIGHTS_ENTRY.get(self._get_format_type())
+    
+    def get_name(self) -> str:
+        return self.model_yaml.get("name") or "N/A"
 
     def get_weights_descr(self) -> SupportedWeightsEntry:
         weight_entry = self._get_weights_entry()
