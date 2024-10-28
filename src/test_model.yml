@@ -1,0 +1,70 @@
+# Model metadata
+name: "Example BioImage Model"
+description: "This is an example model YAML file for bioimage.io"
+authors:
+  - name: "Jane Doe"
+    affiliation: "Example Lab"
+    github: "jdoe"
+license: "CC-BY-4.0"
+documentation: "https://example.com/docs"
+git_repo: "https://github.com/example/repo"
+tags:
+  - bioimage
+  - segmentation
+format_version: "0.5.0"
+
+# Model format and dependencies
+framework: "pytorch"  # or "tensorflow" / "onnx"
+language: "python"
+format: "torchscript"  # or "onnx" / "tensorflow_saved_model_bundle"
+dependencies:
+  conda:
+    name: "example_env"
+    channels:
+      - "conda-forge"
+      - "pytorch"
+    dependencies:
+      - "python=3.8"
+      - "torchvision"
+      - "numpy"
+  pip:
+    pip:
+      - "bioimageio.core>=0.5"
+      - "scikit-image"
+
+# Model weights
+weights:
+  - name: "example_model_weights"
+    source: "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/classification/mobilenet/model/mobilenetv2-10.onnx"
+    sha256: "abc123..."  # checksum for verification
+    format: "onnx"  # or other format
+    opset_version: 15  # applicable for ONNX
+
+# Model inputs and outputs
+inputs:
+  - name: "input_image"
+    axes: "bcyx"
+    shape:
+      min: [1, 1, 256, 256]
+      step: [0, 0, 16, 16]
+    data_type: "float32"
+outputs:
+  - name: "output_segmentation"
+    axes: "bcyx"
+    shape:
+      min: [1, 1, 256, 256]
+      step: [0, 0, 16, 16]
+    data_type: "float32"
+
+# Training information (optional)
+training:
+  source: "https://github.com/example/repo"
+  losses:
+    - name: "cross_entropy"
+  metrics:
+    - name: "accuracy"
+      value: 0.85
+
+# Example for testing
+sample_input: "https://example.com/sample_input.png"
+sample_output: "https://example.com/sample_output.png"

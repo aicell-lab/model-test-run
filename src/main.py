@@ -3,6 +3,7 @@ import asyncio
 import logging
 from hypha.token_init import set_token
 from hypha.service_registry import register_services
+import inspect
 
 def signal_break(signum, frame):
     logging.info(f"Received signal {signum}. Exiting...")
@@ -24,7 +25,13 @@ def init() -> bool:
     init_logging()
     return set_token()
 
+def local_test():
+    print(f"Running {inspect.currentframe().f_code.co_name}")
+    from test_conda_env import test_conda_env_creation
+    test_conda_env_creation()
+
 if __name__ == "__main__":
-    signal.signal(signal.SIGINT, signal_break)
-    if init():
-        asyncio.run(main_loop())
+    local_test()
+    #signal.signal(signal.SIGINT, signal_break)
+    #if init():
+    #    asyncio.run(main_loop())
