@@ -1,41 +1,49 @@
 import yaml
-from pathlib import Path
 from conda_env import get_conda_env, CondaEnv
 from model_yaml import ModelYaml
-import tempfile
 import subprocess
 from config import Config
 
-def _get_conda_env(model_yaml: yaml) -> CondaEnv:
-    model_yaml_obj = ModelYaml(model_yaml)
-    model_yaml_obj.validate()
-    conda_env = get_conda_env(env_name=model_yaml_obj.get_name(), entry=model_yaml_obj.get_weights_descr())  
-    return conda_env
-
-def conda_pack_service(model_yaml: yaml):
-    conda_env = _get_conda_env(model_yaml)  
-    print(conda_env)
-
-    model_yaml_obj = ModelYaml(model_yaml)
-    tmp_yaml_filepath = Config.Storage.tmp_dir / f"{model_yaml_obj.get_name()}.yml"
-    tmp_conda_pack_filepath = Config.Storage.tmp_dir / f"{model_yaml_obj.get_name()}.tar.gz"
+class CondaPack:
+    def __init__(self, model_yaml: yaml):
+        self.model_yaml = model_yaml
+        self.model_yaml_obj = ModelYaml(model_yaml)
+        self.model_yaml_obj.validate()
+        self.conda_env = self._get_conda_env()
+        self._set_paths()
     
-    with open(tmp_yaml_filepath, 'w') as file:
-        yaml.dump(model_yaml, file)
+    def _get_conda_env(self) -> CondaEnv:
+        yaml_obj = self.model_yaml_obj
+        return get_conda_env(env_name=yaml_obj.get_name(), entry=yaml_obj.get_weights_descr())  
     
-    print(tmp_conda_pack_filepath)
+    def _set_paths(self):
+        yaml_obj = self.model_yaml_obj
+        self.tmp_yaml_filepath = Config.Storage.tmp_dir / f"{yaml_obj.get_name()}.yml"
+        self.tmp_conda_pack_filepath = Config.Storage.tmp_dir / f"{yaml_obj.get_name()}.tar.gz"
+    
+    def _dump_tmp_yaml(self):
+        with open(self.tmp_yaml_filepath, 'w') as file:
+            yaml.dump(self.model_yaml, file)
 
-    process = subprocess.Popen(
-        [Config.Scripts.conda_pack_path, str(tmp_yaml_filepath), str(tmp_conda_pack_filepath)],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True
-    )
-    for line in process.stdout:
-        print(line, end='')
-    for line in process.stderr:
-        print(line, end='')
-    process.wait()
+    def _run_conda_packing_script(self):
+        process = subprocess.Popen(
+            [Config.Scripts.conda_pack_path, str(self.tmp_yaml_filepath), str(self.tmp_conda_pack_filepath)],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        for line in process.stdout:
+            print(line, end='')
+        for line in process.stderr:
+            print(line, end='')
+        process.wait()
+
+    def pack(self):
+        self._dump_tmp_yaml()
+        self._run_conda_packing_script()
+
+def conda_pack_service(model_yaml: yaml):    
+    CondaPack(model_yaml).pack()
 
 
 
