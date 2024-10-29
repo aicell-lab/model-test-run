@@ -19,7 +19,7 @@ echo -e "\n"
 echo "Checking for existing environment named $ENV_NAME..."
 if conda env list | grep -q "$ENV_NAME"; then
     echo "Environment $ENV_NAME exists. Removing it..."
-    conda env remove -n "$ENV_NAME"
+    yes | conda env remove -n "$ENV_NAME"
 fi
 
 echo "Creating temporary conda environment named $ENV_NAME..."
@@ -43,5 +43,5 @@ fi
 echo "Deactivating the environment..."
 source deactivate
 echo "Removing the temporary conda environment..."
-conda env remove -n "$ENV_NAME"
+yes | conda env remove -n "$ENV_NAME"
 echo "Environment packed into $OUTPUT_FILE and removed successfully."
