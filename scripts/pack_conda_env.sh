@@ -16,6 +16,12 @@ echo "OUTPUT_FILE=$OUTPUT_FILE"
 echo "ENV_NAME=$ENV_NAME"
 echo -e "\n"
 
+# Check if the output file already exists, and delete it if it does
+if [ -f "$OUTPUT_FILE" ]; then
+    echo "Output file $OUTPUT_FILE already exists. Removing it..."
+    rm "$OUTPUT_FILE"
+fi
+
 echo "Checking for existing environment named $ENV_NAME..."
 if conda env list | grep -q "$ENV_NAME"; then
     echo "Environment $ENV_NAME exists. Removing it..."
