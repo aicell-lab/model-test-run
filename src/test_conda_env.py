@@ -1,8 +1,8 @@
 import inspect
 import yaml
 from pathlib import Path
-from conda_env import get_conda_env
-from model_yaml import ModelYaml
+from conda_pack import conda_pack_service
+
 
 def _get_model_yaml():
     model_yaml_file_path = Path(__file__).parent / "test_model.yml"
@@ -14,9 +14,5 @@ Given a model yaml file, resolve it to a conda file and build an environment.
 """
 def test_conda_env_creation():
     print(f"Running {inspect.currentframe().f_code.co_name}")
-    model_yaml = _get_model_yaml()
-    model_yaml_obj = ModelYaml(model_yaml)
-    model_yaml_obj.validate()
-    conda_env = get_conda_env(env_name=model_yaml_obj.get_name(), entry=model_yaml_obj.get_weights_descr())
-    print(conda_env)
+    conda_pack_service(_get_model_yaml())
     
