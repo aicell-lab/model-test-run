@@ -23,12 +23,23 @@ def conda_pack_service(model_yaml: yaml):
     with open(tmp_yaml_filepath, 'w') as file:
         yaml.dump(model_yaml, file)
 
-    result = subprocess.run([Config.Scripts.conda_pack_path, str(tmp_yaml_filepath), str(tmp_conda_pack_filepath)], capture_output=True, text=True)
-    if result.returncode != 0:
-        print(f"Error in running script:\n{result.stderr}")
-        raise RuntimeError("Failed to execute conda environment packaging script.")
-    print("........")
-    print(result.stdout)
+    process = subprocess.Popen(
+        [Config.Scripts.conda_pack_path, str(tmp_yaml_filepath), str(tmp_conda_pack_filepath)],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    )
+    for line in process.stdout:
+        print(line, end='')
+    for line in process.stderr:
+        print(line, end='')
+    process.wait()
+
+    #result = subprocess.run([Config.Scripts.conda_pack_path, str(tmp_yaml_filepath), str(tmp_conda_pack_filepath)], capture_output=True, text=True)
+    #if result.returncode != 0:
+    #    print(f"Error in running script:\n{result.stderr}")
+    #    raise RuntimeError("Failed to execute conda environment packaging script.")
+    #print(result.stdout)
 
     #tmp_path = Path(tempfile.gettempdir())
     #print(tmp_path)

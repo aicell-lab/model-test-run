@@ -10,6 +10,12 @@ ENV_YAML="$1"
 OUTPUT_FILE="$2"
 ENV_NAME=$(basename "$OUTPUT_FILE" .tar.gz)
 
+echo -e "\n"
+echo "ENV_YAML=$ENV_YAML" 
+echo "OUTPUT_FILE=$OUTPUT_FILE"
+echo "ENV_NAME=$ENV_NAME"
+echo -e "\n"
+
 echo "Checking for existing environment named $ENV_NAME..."
 if conda env list | grep -q "$ENV_NAME"; then
     echo "Environment $ENV_NAME exists. Removing it..."
