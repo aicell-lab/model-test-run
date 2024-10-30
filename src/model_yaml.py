@@ -5,6 +5,7 @@ import subprocess
 import yaml
 from typing import Dict
 from conda_env import get_conda_env, CondaEnv
+from pathlib import Path
 
 class ModelYaml:
     FORMAT_TO_WEIGHTS_ENTRY = {
@@ -63,15 +64,16 @@ class ModelYaml:
         self._check_weights()
         self._check_weights_format()
 
-    def _dump_tmp_yaml(self):
+    def _dump_model_yaml(self) -> Path:
         with open(self.tmp_yaml_filepath, 'w') as file:
             yaml.dump(self.model_yaml, file)
+        return self.tmp_yaml_filepath
 
     def create_conda_env(self):
-        self._dump_tmp_yaml()
-        print(f"Creating conda environment from {self.tmp_yaml_filepath}...")
+        model_yaml_path = self._dump_model_yaml()
+        print(f"Creating conda environment from {model_yaml_path}...")
         subprocess.run(
-            ["conda", "env", "create", "-f", str(self.tmp_yaml_filepath), "-n", self.get_name()],
+            ["conda", "env", "create", "-f", str(model_yaml_path), "-n", self.get_name()],
             check=True
         )
 
@@ -89,22 +91,25 @@ class ModelYaml:
 
     def _get_conda_env(self) -> CondaEnv:
         return get_conda_env(env_name=self.get_name(), entry=self.get_weights_descr())  
+    
+    def _dump_dependencies_yaml(self) -> Path:
+        env_dependencies = self._get_conda_env()
+        env_name = self.get_name()
+        env_deps_yaml_path = Config.Storage.tmp_dir / f"{env_name}_deps.yml"
+        with open(env_deps_yaml_path, 'w') as file:
+            yaml.dump(env_dependencies, file)
+        return env_deps_yaml_path
+
 
     def install_dependencies(self):
-        env = self._get_conda_env()
-        env_name = self.get_name()
-        print(f"Installing dependencies for conda environment '{env_name}'...")
-
-        temp_env_yaml_path = Config.Storage.tmp_dir / f"{env_name}_deps.yml"
-        with open(temp_env_yaml_path, 'w') as file:
-            yaml.dump(env, file)
-
+        env_deps_yaml_path = self._dump_dependencies_yaml()
+        print(f"Installing dependencies for conda environment '{self.get_name()}'...")
         try:
             subprocess.run(
-                ["conda", "env", "update", "--file", str(temp_env_yaml_path), "--name", env_name],
+                ["conda", "env", "update", "--file", str(env_deps_yaml_path), "--name", self.get_name()],
                 check=True
             )
-            print(f"Dependencies installed successfully in '{env_name}'.")
+            print(f"Dependencies installed successfully in '{self.get_name()}'.")
         except subprocess.CalledProcessError as e:
             print(f"Error occurred while installing dependencies: {e}")
             raise
