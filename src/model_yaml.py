@@ -4,6 +4,7 @@ from config import Config
 import subprocess
 import yaml
 from typing import Dict
+from conda_env import get_conda_env, CondaEnv
 
 class ModelYaml:
     FORMAT_TO_WEIGHTS_ENTRY = {
@@ -85,3 +86,25 @@ class ModelYaml:
             print(f"Removed existing conda environment '{env_name}'.")
         except subprocess.CalledProcessError:
             print(f"No existing environment '{env_name}' found.")
+
+    def _get_conda_env(self) -> CondaEnv:
+        return get_conda_env(env_name=self.get_name(), entry=self.get_weights_descr())  
+
+    def install_dependencies(self):
+        env = self._get_conda_env()
+        env_name = self.get_name()
+        print(f"Installing dependencies for conda environment '{env_name}'...")
+
+        temp_env_yaml_path = Config.Storage.tmp_dir / f"{env_name}_deps.yml"
+        with open(temp_env_yaml_path, 'w') as file:
+            yaml.dump(env, file)
+
+        try:
+            subprocess.run(
+                ["conda", "env", "update", "--file", str(temp_env_yaml_path), "--name", env_name],
+                check=True
+            )
+            print(f"Dependencies installed successfully in '{env_name}'.")
+        except subprocess.CalledProcessError as e:
+            print(f"Error occurred while installing dependencies: {e}")
+            raise
