@@ -31,7 +31,7 @@ def start():
 
 def local_test():
     print(f"Running {inspect.currentframe().f_code.co_name}")
-    from local_tests import test_services_locally
+    from local_test.local_tests import test_services_locally
     test_services_locally()
 
 if __name__ == "__main__":
