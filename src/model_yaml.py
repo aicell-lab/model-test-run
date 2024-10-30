@@ -1,7 +1,9 @@
 from bioimageio.spec.model import v0_4, v0_5
-from typing import Dict
 from conda_env import SupportedWeightsEntry
 from config import Config
+import subprocess
+import yaml
+from typing import Dict
 
 class ModelYaml:
     FORMAT_TO_WEIGHTS_ENTRY = {
@@ -13,6 +15,7 @@ class ModelYaml:
 
     def __init__(self, model_yaml: Dict):
         self.model_yaml = model_yaml
+        self.tmp_yaml_filepath = Config.Storage.tmp_dir / f"{self.get_name()}.yml"
 
     def _check_weights(self):
         if not self.model_yaml.get('weights'):
@@ -58,3 +61,27 @@ class ModelYaml:
     def validate(self):
         self._check_weights()
         self._check_weights_format()
+
+    def _dump_tmp_yaml(self):
+        with open(self.tmp_yaml_filepath, 'w') as file:
+            yaml.dump(self.model_yaml, file)
+
+    def create_conda_env(self):
+        self._dump_tmp_yaml()
+        print(f"Creating conda environment from {self.tmp_yaml_filepath}...")
+        subprocess.run(
+            ["conda", "env", "create", "-f", str(self.tmp_yaml_filepath), "-n", self.get_name()],
+            check=True
+        )
+
+    def remove_conda_env(self):
+        env_name = self.get_name()
+        print(f"Removing existing conda environment '{env_name}' if it exists...")
+        try:
+            subprocess.run(
+                ["conda", "env", "remove", "--name", env_name, "--yes"],
+                check=True
+            )
+            print(f"Removed existing conda environment '{env_name}'.")
+        except subprocess.CalledProcessError:
+            print(f"No existing environment '{env_name}' found.")
