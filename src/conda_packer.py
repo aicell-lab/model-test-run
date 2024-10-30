@@ -17,11 +17,7 @@ class CondaPacker:
         yaml_obj = self.model_yaml_obj
         return get_conda_env(env_name=yaml_obj.get_name(), entry=yaml_obj.get_weights_descr())  
 
-    def pack(self):
-
-        self.model_yaml_obj.remove_conda_env()
-        self.model_yaml_obj.create_conda_env()
-
+    def store_conda_pack(self):
         env_name = self.model_yaml_obj.get_name()
         print(f"Packing environment: {env_name}...")
         out_path = conda_pack.pack(
@@ -32,9 +28,13 @@ class CondaPacker:
             force=True,
             n_threads=-1
         )
-
-        self.model_yaml_obj.remove_conda_env()
         print(f"Packing done. Output saved to {out_path}.")
+
+    def pack(self):
+        self.model_yaml_obj.remove_conda_env()
+        self.model_yaml_obj.create_conda_env()
+        self.store_conda_pack()
+        self.model_yaml_obj.remove_conda_env()
 
 def conda_pack_service(model_yaml: yaml):    
     CondaPacker(model_yaml).pack()
