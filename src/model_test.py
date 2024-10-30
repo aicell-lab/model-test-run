@@ -1,11 +1,10 @@
-import inspect
 import yaml
-from pathlib import Path
-from packing.conda_packer import conda_pack_service
 from model_yaml import ModelYaml
 from bioimageio.core import test_model
 from bioimageio.spec.summary import ValidationSummary
 
 def run_model_tests(model_yaml: yaml) -> ValidationSummary:
-    model_yaml_obj = ModelYaml(model_yaml)
-    ...
+    my = ModelYaml(model_yaml)
+    source = my.get_weights_source()
+    weight_format = my.get_weights_format()
+    return test_model(source=source, weight_format=weight_format)
