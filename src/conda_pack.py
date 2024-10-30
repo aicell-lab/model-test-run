@@ -41,6 +41,7 @@ class CondaPack:
     def pack(self):
         self._dump_tmp_yaml()
         self._run_conda_packing_script()
+        print("Packing done.")
 
 def conda_pack_service(model_yaml: yaml):    
     CondaPack(model_yaml).pack()

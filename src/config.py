@@ -14,5 +14,4 @@ class Config:
         conda_pack_path = Path(__file__).parent.parent / "scripts" / "pack_conda_env.sh"
     class Storage:
         tmp_dir = Path(tempfile.gettempdir())
-        #tmp_model_yaml_dir = Path(tempfile.gettempdir())
-        #tmp_conda_pack_dir = Path(tempfile.gettempdir())
+    UNKNOWN_NAME = "N/A"

@@ -37,7 +37,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Activating the temporary environment..."
-source activate "$ENV_NAME"
+conda activate "$ENV_NAME"
 echo "Packing the environment into $OUTPUT_FILE..."
 conda-pack -n "$ENV_NAME" -o "$OUTPUT_FILE"
 
@@ -47,7 +47,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Deactivating the environment..."
-source deactivate
+conda deactivate
 echo "Removing the temporary conda environment..."
 yes | conda env remove -n "$ENV_NAME"
 echo "Environment packed into $OUTPUT_FILE and removed successfully."

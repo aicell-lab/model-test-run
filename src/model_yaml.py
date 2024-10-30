@@ -1,6 +1,7 @@
 from bioimageio.spec.model import v0_4, v0_5
 from typing import Dict
 from conda_env import SupportedWeightsEntry
+from config import Config
 
 class ModelYaml:
     FORMAT_TO_WEIGHTS_ENTRY = {
@@ -32,24 +33,27 @@ class ModelYaml:
         
     def _get_weights_entry(self):
         return self.model_yaml['weights'][0]
+    
+    def _get_weights_opset_version(self):
+        return self._get_weights_entry().get("opset_version")
+    
+    def get_weights_source(self):
+        return self._get_weights_entry().get("source")
         
-    def _get_format_type(self):
+    def get_weights_format(self):
         return self._get_weights_entry()['format']
         
     def get_weights_descr_class(self):
-        return ModelYaml.FORMAT_TO_WEIGHTS_ENTRY.get(self._get_format_type())
+        return ModelYaml.FORMAT_TO_WEIGHTS_ENTRY.get(self.get_weights_format())
     
     def get_name(self) -> str:
-        return self.model_yaml.get("name").replace(" ", "_") or "N/A"
+        return self.model_yaml.get("name").replace(" ", "_") or Config.UNKNOWN_NAME
 
     def get_weights_descr(self) -> SupportedWeightsEntry:
-        weight_entry = self._get_weights_entry()
-        weights_descr_class = self.get_weights_descr_class()
-        descr = weights_descr_class(
-            opset_version=weight_entry.get("opset_version"),
-            source=weight_entry.get("source") 
+        return self.get_weights_descr_class()(
+            opset_version=self._get_weights_opset_version(),
+            source=self.get_weights_source()
         )
-        return descr
 
     def validate(self):
         self._check_weights()
