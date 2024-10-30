@@ -3,8 +3,9 @@ from conda_env import get_conda_env, CondaEnv
 from model_yaml import ModelYaml
 import subprocess
 from config import Config
+import conda_pack
 
-class CondaPack:
+class CondaPacker:
     def __init__(self, model_yaml: yaml):
         self.model_yaml = model_yaml
         self.model_yaml_obj = ModelYaml(model_yaml)
@@ -38,13 +39,48 @@ class CondaPack:
             print(line, end='')
         process.wait()
 
+    def _remove_conda_env_from_yaml(self):
+        env_name = self.model_yaml_obj.get_name()
+        print(f"Removing existing conda environment '{env_name}' if it exists...")
+        try:
+            subprocess.run(
+                ["conda", "env", "remove", "--name", env_name, "--yes"],
+                check=True
+            )
+            print(f"Removed existing conda environment '{env_name}'.")
+        except subprocess.CalledProcessError:
+            print(f"No existing environment '{env_name}' found. Proceeding to create a new one.")
+
+    def _create_conda_env_from_yaml(self):
+            env_name = self.model_yaml_obj.get_name()
+            print(f"Creating conda environment from {self.tmp_yaml_filepath}...")
+            subprocess.run(
+                ["conda", "env", "create", "-f", str(self.tmp_yaml_filepath), "-n", env_name],
+                check=True
+            )
+
     def pack(self):
         self._dump_tmp_yaml()
-        self._run_conda_packing_script()
-        print("Packing done.")
+
+        self._remove_conda_env_from_yaml()
+        self._create_conda_env_from_yaml()
+
+        env_name = self.model_yaml_obj.get_name()
+        print(f"Packing environment: {env_name}...")
+        out_path = conda_pack.pack(
+            name=env_name,
+            output=str(self.tmp_conda_pack_filepath),
+            format="tar.gz",
+            verbose=True,
+            force=True,
+            n_threads=-1
+        )
+
+        self._remove_conda_env_from_yaml()
+        print(f"Packing done. Output saved to {out_path}.")
 
 def conda_pack_service(model_yaml: yaml):    
-    CondaPack(model_yaml).pack()
+    CondaPacker(model_yaml).pack()
 
 
 
