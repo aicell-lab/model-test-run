@@ -2,7 +2,7 @@ from config import Config
 import subprocess
 import yaml
 from typing import Dict
-from conda_env import get_conda_env, CondaEnv
+from packing.conda_env import get_conda_env, CondaEnv
 from model_yaml import ModelYaml
 
 class CondaEnvController:

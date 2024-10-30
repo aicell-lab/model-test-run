@@ -3,7 +3,7 @@ from model_yaml import ModelYaml
 from config import Config
 import conda_pack
 from typing import Dict
-from conda_env_controller import CondaEnvController
+from packing.conda_env_controller import CondaEnvController
 
 class CondaPacker:
     def __init__(self, model_yaml: Dict):

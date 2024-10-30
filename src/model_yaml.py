@@ -1,5 +1,5 @@
 from bioimageio.spec.model import v0_5
-from conda_env import SupportedWeightsEntry
+from packing.conda_env import SupportedWeightsEntry
 from config import Config
 from typing import Dict
 
@@ -59,5 +59,4 @@ class ModelYaml:
         self._check_weights()
         self._check_weights_format()
     
-
 

@@ -1,7 +1,7 @@
 import inspect
 import yaml
 from pathlib import Path
-from conda_packer import conda_pack_service
+from packing.conda_packer import conda_pack_service
 from model_yaml import ModelYaml
 from bioimageio.core import test_model
 from bioimageio.spec.summary import ValidationSummary
