@@ -3,7 +3,6 @@ import yaml
 from pathlib import Path
 from packing.conda_packer import conda_pack_service
 #from model_test import run_model_tests
-from data.model_yaml import ModelYaml
 from data.model_yaml_validation import ModelYamlValidation
 
 def _get_model_yaml():

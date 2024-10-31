@@ -1,9 +1,6 @@
-from bioimageio.spec.model import v0_5
-from packing.conda_env import SupportedWeightsEntry
-from config import Config
 from typing import Dict
 from data.model_values import ModelValues
-from data.model_yaml import ModelYaml
+from data.model_value_converter import ModelValueConverter
 
 class ModelYamlValidation:
     def __init__(self, model_yaml: Dict):
@@ -19,10 +16,10 @@ class ModelYamlValidation:
 
     def _check_weights_format(self):
         format = self.values.weights.format
-        if format not in ModelYaml.FORMAT_TO_WEIGHTS_ENTRY:
+        if format not in ModelValueConverter.FORMAT_TO_WEIGHTS_ENTRY:
             raise ValueError(
                 f"Unsupported format '{format}' found in weight entry. "
-                f"Supported formats are: {', '.join(ModelYaml.FORMAT_TO_WEIGHTS_ENTRY.keys())}"
+                f"Supported formats are: {', '.join(ModelValueConverter.FORMAT_TO_WEIGHTS_ENTRY.keys())}"
             )
 
     def validate(self):
