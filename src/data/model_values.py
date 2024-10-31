@@ -22,7 +22,7 @@ class ModelValues:
     weights: ModelWeights
 
     @staticmethod
-    def _get_weight_entry(model_yaml: Dict):
+    def _extract_weight_entry(model_yaml: Dict):
         weights_section = model_yaml.get("weights")
         if isinstance(weights_section, list) and weights_section:
             return weights_section[0]
@@ -32,11 +32,15 @@ class ModelValues:
             return weight_entry
         raise ValueError("Invalid weights format in YAML")  
 
+    @staticmethod
+    def _extract_name(model_yaml: Dict):
+        return model_yaml.get("name", Config.UNKNOWN_NAME).replace(" ", "_")
+
     @classmethod
     def from_dict(cls, model_yaml: Dict) -> "ModelValues":
-        name = model_yaml.get("name", Config.UNKNOWN_NAME).replace(" ", "_")
-        weight_entry = cls._get_weight_entry(model_yaml)
+        name = cls._extract_name(model_yaml)
+        weights = ModelWeights.from_dict(cls._extract_weight_entry(model_yaml))
         return cls(
             name=name,
-            weights=ModelWeights.from_dict(weight_entry)
+            weights=weights
         )

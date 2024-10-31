@@ -1,7 +1,7 @@
 import inspect
 import yaml
 from pathlib import Path
-from packing.conda_packer import conda_pack_service
+from packing.conda_packer import CondaPacker
 #from model_test import run_model_tests
 from data.model_yaml_validation import ModelYamlValidation
 
@@ -14,7 +14,8 @@ def test_services_locally():
     print(f"Running {inspect.currentframe().f_code.co_name}")
     model_yaml = _get_model_yaml()
     ModelYamlValidation(model_yaml).validate()
-    conda_pack_service(model_yaml)
+    CondaPacker(model_yaml).pack()
+
     #model_test_result = run_model_tests(model_yaml)
     #print(f"Model test result: {model_test_result}")
 

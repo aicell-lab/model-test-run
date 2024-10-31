@@ -34,8 +34,6 @@ class CondaPacker:
         self.store_conda_pack()
         self.env_controller.remove_conda_env()
 
-def conda_pack_service(model_yaml: Dict):    
-    CondaPacker(model_yaml).pack()
 
 
 
