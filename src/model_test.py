@@ -1,5 +1,5 @@
 import yaml
-from model_yaml import ModelYaml
+from data.model_yaml import ModelYaml
 from bioimageio.core import test_model
 from bioimageio.spec.summary import ValidationSummary
 from model_download import ModelDownloader
@@ -9,8 +9,6 @@ def run_model_tests(model_yaml: yaml) -> ValidationSummary:
     source = my.get_weights_source()
     weight_format = my.get_weights_format()
 
-    downloader = ModelDownloader(source)
-    downloader.download_model()
-    model_filepath = str(downloader.get_download_filepath())
+    tmp_path = '/tmp/nucleisegmentationboundarymodel_onnx/weights.onnx'
 
-    return test_model(source=model_filepath, weight_format=weight_format)
+    return test_model(source=tmp_path, weight_format=weight_format)

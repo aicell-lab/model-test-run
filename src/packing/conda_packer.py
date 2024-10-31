@@ -1,5 +1,5 @@
 import yaml
-from model_yaml import ModelYaml
+from data.model_yaml import ModelYaml
 from config import Config
 import conda_pack
 from typing import Dict

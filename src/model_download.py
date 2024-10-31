@@ -1,3 +1,5 @@
+#Unclear if this class is necessary
+
 import requests
 from config import Config
 from pathlib import Path

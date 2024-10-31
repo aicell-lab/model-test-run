@@ -3,11 +3,12 @@ import subprocess
 import yaml
 from typing import Dict
 from packing.conda_env import get_conda_env, CondaEnv
-from model_yaml import ModelYaml
+from data.model_yaml import ModelYaml
 
 class CondaEnvController:
     def __init__(self, model_yaml: Dict):
         self.model_yaml_obj = ModelYaml(model_yaml)
+        self.model_yaml = model_yaml
         self._set_paths()
     
     def _set_paths(self):
@@ -17,7 +18,7 @@ class CondaEnvController:
 
     def _dump_model_yaml(self):
         with open(self.tmp_model_yaml_filepath, 'w') as file:
-            yaml.dump(self.model_yaml_obj.model_yaml, file)
+            yaml.dump(self.model_yaml, file)
 
     def create_conda_env(self):
         self._dump_model_yaml()
