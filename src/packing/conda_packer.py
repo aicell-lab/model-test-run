@@ -4,26 +4,27 @@ from config import Config
 import conda_pack
 from typing import Dict
 from packing.conda_env_controller import CondaEnvController
+from packing.conda_file_handler import CondaFileHandler
 
 class CondaPacker:
     def __init__(self, model_yaml: Dict):
         self.values = ModelValues.from_dict(model_yaml)
         self.env_controller = CondaEnvController(model_yaml)
+        self.file_handler = CondaFileHandler(model_yaml)
 
-    def _get_conda_pack_filepath(self):
-        return Config.Storage.tmp_dir / f"{self.values.name}.tar.gz"
-
-    def store_conda_pack(self):
-        print(f"Packing environment: {self.values.name}...")
-        out_path = conda_pack.pack(
+    def _conda_pack(self) -> str:
+        return conda_pack.pack(
             name=self.values.name,
-            output=str(self._get_conda_pack_filepath()),
+            output=str(self.file_handler.get_conda_pack_filepath()),
             format="tar.gz",
             verbose=True,
             force=True,
             n_threads=-1
         )
-        print(f"Packing done. Output saved to {out_path}.")
+
+    def store_conda_pack(self):
+        print(f"Packing environment: {self.values.name}...")
+        print(f"Packing done. Output saved to {self._conda_pack()}.")
 
     def _setup_conda_env(self):
         self.env_controller.remove_conda_env()

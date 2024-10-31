@@ -13,13 +13,19 @@ class CondaFileHandler:
 
     def _get_conda_env(self) -> CondaEnv:
         weights_descr = ModelValueConverter(self.model_yaml).get_weights_descr()
-        return get_conda_env(env_name=self.values.name, entry=weights_descr)  
+        return get_conda_env(env_name=self.values.name, entry=weights_descr)
+
+    def _get_files_dir(self) -> Path:
+        return Config.Storage.tmp_dir
     
     def get_dependencies_path(self) -> Path:
-        return Config.Storage.tmp_dir / f"{self.values.name}_deps.yml"
+        return self._get_files_dir() / f"{self.values.name}_deps.yml"
 
     def get_model_yaml_path(self) -> Path:
-        return Config.Storage.tmp_dir / f"{self.values.name}.yml"
+        return self._get_files_dir() / f"{self.values.name}.yml"
+
+    def get_conda_pack_filepath(self):
+        return self._get_files_dir() / f"{self.values.name}.tar.gz"
 
     def dump_dependencies_yaml(self):
         env_dependencies = self._get_conda_env()
