@@ -1,6 +1,6 @@
 from config import Config
-from typing import Dict, Optional, Type
-from dataclasses import dataclass, field
+from typing import Dict, Optional
+from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class ModelWeights:

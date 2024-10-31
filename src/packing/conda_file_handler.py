@@ -24,7 +24,7 @@ class CondaFileHandler:
     def get_model_yaml_path(self) -> Path:
         return self._get_files_dir() / f"{self.values.name}.yml"
 
-    def get_conda_pack_filepath(self):
+    def get_conda_pack_path(self):
         return self._get_files_dir() / f"{self.values.name}.tar.gz"
 
     def dump_dependencies_yaml(self):

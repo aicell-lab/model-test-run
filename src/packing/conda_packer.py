@@ -1,6 +1,4 @@
-import yaml
 from data.model_values import ModelValues
-from config import Config
 import conda_pack
 from typing import Dict
 from packing.conda_env_controller import CondaEnvController
@@ -15,7 +13,7 @@ class CondaPacker:
     def _conda_pack(self) -> str:
         return conda_pack.pack(
             name=self.values.name,
-            output=str(self.file_handler.get_conda_pack_filepath()),
+            output=str(self.file_handler.get_conda_pack_path()),
             format="tar.gz",
             verbose=True,
             force=True,
@@ -36,7 +34,7 @@ class CondaPacker:
         self.store_conda_pack()
         self.env_controller.remove_conda_env()
 
-def conda_pack_service(model_yaml: yaml):    
+def conda_pack_service(model_yaml: Dict):    
     CondaPacker(model_yaml).pack()
 
 
