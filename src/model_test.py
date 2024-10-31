@@ -1,5 +1,5 @@
 import yaml
-from data.model_yaml import ModelYaml
+from src.data.model_yaml_validation import ModelYaml
 from bioimageio.core import test_model
 from bioimageio.spec.summary import ValidationSummary
 from model_download import ModelDownloader
