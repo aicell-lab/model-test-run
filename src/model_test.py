@@ -1,14 +1,12 @@
-import yaml
-from src.data.model_yaml_validation import ModelYaml
 from bioimageio.core import test_model
 from bioimageio.spec.summary import ValidationSummary
-from model_download import ModelDownloader
 
-def run_model_tests(model_yaml: yaml) -> ValidationSummary:
-    my = ModelYaml(model_yaml)
-    source = my.get_weights_source()
-    weight_format = my.get_weights_format()
+def _print_result(r: ValidationSummary):
+    print(f"Model '{r.name}': {r.status}")
+    for detail in r.details:
+        print(f"{detail.name}: {detail.status}")
 
-    tmp_path = '/tmp/nucleisegmentationboundarymodel_onnx/weights.onnx'
-
-    return test_model(source=tmp_path, weight_format=weight_format)
+def run_model_tests(rdf_yaml_path) -> bool:
+    result = test_model(source=rdf_yaml_path)
+    _print_result(result)
+    return result.status == 'passed'
