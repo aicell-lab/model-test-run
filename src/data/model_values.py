@@ -5,16 +5,27 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class ModelWeights:
     source: str
-    opset_version: Optional[int]
+    version_number: int
+    version_type: str
     format: str
 
     @classmethod
     def from_dict(cls, weight_entry: Dict) -> "ModelWeights":
         return cls(
             source=weight_entry.get("source"),
-            opset_version=weight_entry.get("opset_version"),
+            version_number=ModelWeights._extract_version_number(weight_entry),
+            version_type=ModelWeights._extract_version_type(weight_entry),
             format=weight_entry.get("format")
         )
+    
+    @staticmethod
+    def _extract_version_number(weight_entry: Dict) -> int:
+        version_key = next((k for k in weight_entry if "version" in k), None)
+        return weight_entry.get(version_key) if version_key else None
+
+    @staticmethod
+    def _extract_version_type(weight_entry: Dict) -> str:
+        return next((k for k in weight_entry if "version" in k), None)
 
 @dataclass(frozen=True)
 class ModelValues:

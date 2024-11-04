@@ -18,8 +18,11 @@ class ModelValueConverter:
         return ModelValueConverter.FORMAT_TO_WEIGHTS_ENTRY.get(self.values.weights.format)
 
     def get_weights_descr(self) -> SupportedWeightsEntry:
+        version_info = {
+            self.values.weights.version_type: self.values.weights.version_number
+        }
         return self.get_weights_descr_class()(
-            opset_version=self.values.weights.opset_version,
+            **version_info,
             source=self.values.weights.source
         )
 
