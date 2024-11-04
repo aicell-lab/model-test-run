@@ -26,11 +26,38 @@ class ModelWeights:
     @staticmethod
     def _extract_version_type(weight_entry: Dict) -> str:
         return next((k for k in weight_entry if "version" in k), None)
+    
+@dataclass(frozen=True)
+class ModelZenodo:
+    doi_prefix: str
+    dataset_id: str
+    revision_id: str
+
+    @classmethod
+    def from_dict(cls, model_yaml: Dict) -> "ModelZenodo":
+        config_id = ModelZenodo._extract_config_id(model_yaml)
+        if config_id:
+            config_values = config_id.rsplit('/')
+            if len(config_values) == 3:
+                return cls(
+                    doi_prefix = config_values[0],
+                    dataset_id = config_values[1],
+                    revision_id = config_values[2]
+                )
+            else:
+                raise ValueError(f"Expected config_id format 'prefix/dataset_id/revision_id', got '{config_id}'")
+        else:
+            raise ValueError("No config_id found in the provided model_yaml.")
+    
+    @staticmethod
+    def _extract_config_id(model_yaml: Dict) -> Optional[str]:
+        return model_yaml.get("config", {}).get("_id")
 
 @dataclass(frozen=True)
 class ModelValues:
     name: str
     weights: ModelWeights
+    zenodo: ModelZenodo
 
     @staticmethod
     def _extract_weight_entry(model_yaml: Dict):
@@ -51,7 +78,9 @@ class ModelValues:
     def from_dict(cls, model_yaml: Dict) -> "ModelValues":
         name = cls._extract_name(model_yaml)
         weights = ModelWeights.from_dict(cls._extract_weight_entry(model_yaml))
+        zenodo = ModelZenodo.from_dict(model_yaml)
         return cls(
             name=name,
-            weights=weights
+            weights=weights,
+            zenodo=zenodo
         )
