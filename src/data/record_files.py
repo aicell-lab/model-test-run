@@ -8,7 +8,7 @@ import requests
 from zipfile import ZipFile
 from io import BytesIO
 from data.model_values import ModelValues
-from typing import Dict
+from typing import Dict, List
 from config import Config
 
 
@@ -27,8 +27,8 @@ class RecordFileHandler:
     def _get_files_dir(self) -> Path:
         return Config.Storage.tmp_dir / self.values.zenodo.dataset_id
     
-    def get_weights_source_path(self) -> Path:
-        return self._get_files_dir() / self.values.weights[0].source
+    def get_weights_source_paths(self) -> List[Path]:
+        return [self._get_files_dir() / weight.source for weight in self.values.weights]
     
     def download_and_extract_files(self):
         response = requests.get(self._get_record_files_download_link(), stream=True)

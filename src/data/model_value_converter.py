@@ -16,9 +16,10 @@ class ModelValueConverter:
         self.values = ModelValues.from_dict(model_yaml)
         self.record_files_handler = RecordFileHandler(model_yaml)
         self.record_files_handler.download_and_extract_files()
+        self.w_index = 0 # Currently only tests the 1st weight entry
     
     def _get_weight(self) -> ModelWeights:
-        return self.values.weights[0]
+        return self.values.weights[self.w_index]
 
     def get_weights_descr_class(self):
         return ModelValueConverter.FORMAT_TO_WEIGHTS_ENTRY.get(self._get_weight().format)
@@ -30,7 +31,7 @@ class ModelValueConverter:
         }
         return self.get_weights_descr_class()(
             **version_info,
-            source=self.record_files_handler.get_weights_source_path()
+            source=self.record_files_handler.get_weights_source_paths()[self.w_index]
         )
 
     
