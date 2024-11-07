@@ -1,7 +1,7 @@
 from bioimageio.spec.model import v0_5
 from packing.conda_env import SupportedWeightsEntry
 from typing import Dict
-from data.model_values import ModelValues
+from data.model_values import ModelValues, ModelWeights
 from data.record_files import RecordFileHandler
 
 class ModelValueConverter:
@@ -16,13 +16,17 @@ class ModelValueConverter:
         self.values = ModelValues.from_dict(model_yaml)
         self.record_files_handler = RecordFileHandler(model_yaml)
         self.record_files_handler.download_and_extract_files()
+    
+    def _get_weight(self) -> ModelWeights:
+        return self.values.weights[0]
 
     def get_weights_descr_class(self):
-        return ModelValueConverter.FORMAT_TO_WEIGHTS_ENTRY.get(self.values.weights.format)
+        return ModelValueConverter.FORMAT_TO_WEIGHTS_ENTRY.get(self._get_weight().format)
 
     def get_weights_descr(self) -> SupportedWeightsEntry:
+        weight = self._get_weight()
         version_info = {
-            self.values.weights.version_type: self.values.weights.version_number
+            weight.version_type: weight.version_number
         }
         return self.get_weights_descr_class()(
             **version_info,

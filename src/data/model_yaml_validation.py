@@ -17,12 +17,13 @@ class ModelYamlValidation:
                 raise ValueError(f"Weight entry must contain the following keys: {', '.join(missing_keys)}")
 
     def _check_weights_format(self):
-        format = self.values.weights.format
-        if format not in ModelValueConverter.FORMAT_TO_WEIGHTS_ENTRY:
-            raise ValueError(
-                f"Unsupported format '{format}' found in weight entry. "
-                f"Supported formats are: {', '.join(ModelValueConverter.FORMAT_TO_WEIGHTS_ENTRY.keys())}"
-            )
+        for weight in self.values.weights:
+            format = weight.format
+            if format not in ModelValueConverter.FORMAT_TO_WEIGHTS_ENTRY:
+                raise ValueError(
+                    f"Unsupported format '{format}' found in weight entry. "
+                    f"Supported formats are: {', '.join(ModelValueConverter.FORMAT_TO_WEIGHTS_ENTRY.keys())}"
+                )
 
     def validate(self):
         self._check_weights()

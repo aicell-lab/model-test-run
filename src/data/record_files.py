@@ -28,7 +28,7 @@ class RecordFileHandler:
         return Config.Storage.tmp_dir / self.values.zenodo.dataset_id
     
     def get_weights_source_path(self) -> Path:
-        return self._get_files_dir() / self.values.weights.source
+        return self._get_files_dir() / self.values.weights[0].source
     
     def download_and_extract_files(self):
         response = requests.get(self._get_record_files_download_link(), stream=True)

@@ -5,10 +5,12 @@ from model_test import run_model_tests
 from data.model_yaml_validation import ModelYamlValidation
 from packing.conda_packer import CondaPacker
 import requests
+from typing import Tuple
 
 def _get_model_yaml_url():
-    record_id = "6647688"
-    return f"https://zenodo.org/records/{record_id}/files/rdf.yaml"
+    #record_id = "6647688"
+    #return f"https://zenodo.org/records/{record_id}/files/rdf.yaml"
+    return "https://uk1s3.embassy.ebi.ac.uk/public-datasets/bioimage.io/chatty-frog/1/files/rdf.yaml"
 
 def _yaml_from_url(url):
     response = requests.get(url)
@@ -17,15 +19,25 @@ def _yaml_from_url(url):
 
 # Have function that tests everything and returns result and optional error message.
 
-def test_services_locally():
-    print(f"Running {inspect.currentframe().f_code.co_name}")
-
-    model_yaml_url = _get_model_yaml_url()
-    model_yaml = _yaml_from_url(model_yaml_url)
-
+def run_tests(rdf_yaml_url) -> Tuple[bool, str]:
+    #try:
+    model_yaml = _yaml_from_url(rdf_yaml_url)
     ModelYamlValidation(model_yaml).validate()
     CondaPacker(model_yaml).pack()
-    if run_model_tests(model_yaml_url):
-        ...
-        #TODO: Pack & Publish
+    if run_model_tests(rdf_yaml_url):
+        return True, ""
+    #except ValueError as e:
+    #    return False, str(e)
+    return False, "Model tests failed unexpectedly."
+
+def test_services_locally():
+    print(f"Running {inspect.currentframe().f_code.co_name}")
+    model_yaml_url = _get_model_yaml_url()
+    
+    result, msg = run_tests(model_yaml_url)
+    if not result:
+        print(f"Testing [{model_yaml_url}]: {msg}")
+    else:
+        print(f"Testing [{model_yaml_url}]: passed")
+
 

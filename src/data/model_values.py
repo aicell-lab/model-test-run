@@ -96,7 +96,7 @@ class ModelValues:
             ModelWeights.from_dict({format_name: format_data})
             for format_name, format_data in model_yaml.get("weights").items()
         ]
-        zenodo = ModelZenodo.from_dict(model_yaml.get("config"))
+        zenodo = ModelZenodo.from_dict(model_yaml.get("id") or model_yaml.get("config"))
         return cls(
             name=name,
             weights=weights,
