@@ -1,5 +1,5 @@
 from config import Config
-from typing import Dict, Optional, Any
+from typing import Dict, Optional, Any, List
 from dataclasses import dataclass
 import re
 
@@ -12,21 +12,23 @@ class ModelWeights:
 
     @classmethod
     def from_dict(cls, weight_entry: Dict) -> "ModelWeights":
+        format_name, format_data = next(iter(weight_entry.items()))
+        
         return cls(
-            source=weight_entry.get("source"),
-            version_number=ModelWeights._extract_version_number(weight_entry),
-            version_type=ModelWeights._extract_version_type(weight_entry),
-            format=weight_entry.get("format")
+            source=format_data.get("source"),
+            version_number=ModelWeights._extract_version_number(format_data),
+            version_type=ModelWeights._extract_version_type(format_data),
+            format=format_name
         )
     
     @staticmethod
-    def _extract_version_number(weight_entry: Dict) -> int:
-        version_key = next((k for k in weight_entry if "version" in k), None)
-        return weight_entry.get(version_key) if version_key else None
+    def _extract_version_number(format_data: Dict) -> int:
+        version_key = next((k for k in format_data if "version" in k), None)
+        return format_data.get(version_key) if version_key else None
 
     @staticmethod
-    def _extract_version_type(weight_entry: Dict) -> str:
-        return next((k for k in weight_entry if "version" in k), None)
+    def _extract_version_type(format_data: Dict) -> str:
+        return next((k for k in format_data if "version" in k), None)
     
 @dataclass(frozen=True)
 class ModelZenodo:
@@ -35,8 +37,8 @@ class ModelZenodo:
     revision_id: Optional[str]
 
     @classmethod
-    def from_dict(cls, model_yaml: Dict) -> "ModelZenodo":
-        config_id = ModelZenodo._extract_config_id(model_yaml)
+    def from_dict(cls, config_entry: Dict) -> "ModelZenodo":
+        config_id = ModelZenodo._extract_zenodo_id(config_entry)
         if config_id:
             parts = config_id.split('/')
             if len(parts) == 3:  # format: "10.xxx/zenodo.yyyy/revision"
@@ -57,10 +59,6 @@ class ModelZenodo:
             )
         else:
             raise ValueError("No config_id found in the provided model_yaml.")
-    
-    @staticmethod
-    def _extract_config_id(model_yaml: Dict) -> Optional[str]:
-        return ModelZenodo._extract_zenodo_id(model_yaml.get("config", {}))
     
     @staticmethod
     def _extract_zenodo_id(model_yaml: Dict) -> Optional[str]:
@@ -84,19 +82,8 @@ class ModelZenodo:
 @dataclass(frozen=True)
 class ModelValues:
     name: str
-    weights: ModelWeights
+    weights: List[ModelWeights]
     zenodo: ModelZenodo
-
-    @staticmethod
-    def _extract_weight_entry(model_yaml: Dict):
-        weights_section = model_yaml.get("weights")
-        if isinstance(weights_section, list) and weights_section:
-            return weights_section[0]
-        if isinstance(weights_section, dict) and weights_section:
-            weight_entry_key, weight_entry = next(iter(weights_section.items()))
-            weight_entry['format'] = weight_entry_key
-            return weight_entry
-        raise ValueError("Invalid weights format in YAML")  
 
     @staticmethod
     def _extract_name(model_yaml: Dict):
@@ -105,8 +92,11 @@ class ModelValues:
     @classmethod
     def from_dict(cls, model_yaml: Dict) -> "ModelValues":
         name = cls._extract_name(model_yaml)
-        weights = ModelWeights.from_dict(cls._extract_weight_entry(model_yaml))
-        zenodo = ModelZenodo.from_dict(model_yaml)
+        weights = [
+            ModelWeights.from_dict({format_name: format_data})
+            for format_name, format_data in model_yaml.get("weights").items()
+        ]
+        zenodo = ModelZenodo.from_dict(model_yaml.get("config"))
         return cls(
             name=name,
             weights=weights,

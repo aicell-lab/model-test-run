@@ -10,9 +10,11 @@ class ModelYamlValidation:
         if not self.values.weights:
             raise ValueError("No weights found in the model YAML.")
         required_keys = ['source', 'version_number', 'version_type', 'format']
-        missing_keys = [key for key in required_keys if getattr(self.values.weights, key) is None]
-        if missing_keys:
-            raise ValueError(f"Weight entry must contain the following keys: {', '.join(missing_keys)}")
+
+        for weight in self.values.weights:
+            missing_keys = [key for key in required_keys if getattr(weight, key) is None]
+            if missing_keys:
+                raise ValueError(f"Weight entry must contain the following keys: {', '.join(missing_keys)}")
 
     def _check_weights_format(self):
         format = self.values.weights.format
