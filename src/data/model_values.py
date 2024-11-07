@@ -1,6 +1,7 @@
 from config import Config
-from typing import Dict, Optional
+from typing import Dict, Optional, Any
 from dataclasses import dataclass
+import re
 
 @dataclass(frozen=True)
 class ModelWeights:
@@ -31,28 +32,55 @@ class ModelWeights:
 class ModelZenodo:
     doi_prefix: str
     dataset_id: str
-    revision_id: str
+    revision_id: Optional[str]
 
     @classmethod
     def from_dict(cls, model_yaml: Dict) -> "ModelZenodo":
         config_id = ModelZenodo._extract_config_id(model_yaml)
         if config_id:
-            config_values = config_id.rsplit('/')
-            if len(config_values) == 3:
-                return cls(
-                    doi_prefix = config_values[0],
-                    dataset_id = config_values[1],
-                    revision_id = config_values[2]
-                )
+            parts = config_id.split('/')
+            if len(parts) == 3:  # format: "10.xxx/zenodo.yyyy/revision"
+                doi_prefix = parts[0]
+                dataset_part = parts[1]
+                revision_id = parts[2]
+            elif len(parts) == 2:  # format: "10.xxx/zenodo.yyyy"
+                doi_prefix = parts[0]
+                dataset_part = parts[1]
+                revision_id = None
             else:
-                raise ValueError(f"Expected config_id format 'prefix/dataset_id/revision_id', got '{config_id}'")
+                raise ValueError(f"Expected config_id format 'prefix/dataset_id' or 'prefix/dataset_id/revision_id', got '{config_id}'")
+            dataset_id = dataset_part.split("zenodo.")[-1] if "zenodo." in dataset_part else dataset_part
+            return cls(
+                doi_prefix=doi_prefix,
+                dataset_id=dataset_id,
+                revision_id=revision_id
+            )
         else:
             raise ValueError("No config_id found in the provided model_yaml.")
     
     @staticmethod
     def _extract_config_id(model_yaml: Dict) -> Optional[str]:
-        return model_yaml.get("config", {}).get("_id")
-
+        return ModelZenodo._extract_zenodo_id(model_yaml.get("config", {}))
+    
+    @staticmethod
+    def _extract_zenodo_id(model_yaml: Dict) -> Optional[str]:
+        zenodo_pattern = re.compile(r"10\.\d+/zenodo\.\d+(/\d+)?")
+        def search_zenodo_id(data: Any) -> Optional[str]:
+            if isinstance(data, dict):
+                for _, value in data.items():
+                    result = search_zenodo_id(value)
+                    if result:
+                        return result
+            elif isinstance(data, list):
+                for item in data:
+                    result = search_zenodo_id(item)
+                    if result:
+                        return result
+            elif isinstance(data, str):
+                if zenodo_pattern.match(data):
+                    return data
+        return search_zenodo_id(model_yaml)
+ 
 @dataclass(frozen=True)
 class ModelValues:
     name: str
