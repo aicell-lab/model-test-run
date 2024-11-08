@@ -46,9 +46,9 @@ def parse_args():
 if __name__ == "__main__":
     args = parse_args()
     model_url = args.model
-    print(f"Testing [{model_url}]...")
+    print(f"Testing [{model_url}]")
     project = ModelProject(model_url)
-    print(project.download_path)
+    print(f"zip [{project.download_path}], unpack [{project.project_path}]")
 
     #local_test()
     #start()
