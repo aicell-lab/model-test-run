@@ -1,5 +1,6 @@
 from bioimageio.core import test_model
 from bioimageio.spec.summary import ValidationSummary
+from packing.model_project import ModelProject
 
 def _print_result(r: ValidationSummary):
     passed_details = [detail.name for detail in r.details if detail.status == 'passed']
@@ -17,7 +18,7 @@ def _print_result(r: ValidationSummary):
         for name in failed_details:
             print(f"  {name}")
 
-def run_model_tests(rdf_yaml_path) -> bool:
-    result = test_model(source=rdf_yaml_path)
+def run_model_tests(project: ModelProject) -> bool:
+    result = test_model(source=project.get_rdf_yaml_path())
     _print_result(result)
     return result.status == 'passed'
