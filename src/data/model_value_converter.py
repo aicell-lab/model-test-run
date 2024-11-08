@@ -19,9 +19,6 @@ class ModelValueConverter:
     def _get_weight_sources(self) -> List[str]:
         return [weight.source for weight in self.values.weights]
     
-    def _get_weight_source_urls(self) -> List[HttpUrl]:
-        return [f"https://zenodo.org/records/{self.values.zenodo.revision_id}/files/{source}" for source in self._get_weight_sources()]
-    
     def _get_weight(self) -> ModelWeights:
         return self.values.weights[self.w_index]
 

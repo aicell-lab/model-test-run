@@ -1,15 +1,28 @@
 from pydantic import HttpUrl
 import requests
-from typing import Optional
+from typing import Optional, Dict, Any
 from pathlib import Path
 from config import Config
 import zipfile
+import yaml
 
 class ModelProject:
     def __init__(self, model_url: HttpUrl):
         self.model_url = model_url
         self.download_path = self.download_model()
         self.project_path = self.unpack_zip()
+
+    def _load_yaml(self, file_path: Path) -> Any:
+        try:
+            with file_path.open("r") as file:
+                return yaml.safe_load(file)
+        except FileNotFoundError:
+            print(f"File not found: {file_path}")
+        except yaml.YAMLError as e:
+            print(f"Error parsing YAML file: {e}")
+
+    def get_model_yaml(self) -> Dict:
+        return self._load_yaml(self.get_rdf_yaml_path())
 
     def get_project_path(self) -> Path:
         return self.project_path

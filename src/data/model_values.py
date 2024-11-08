@@ -4,21 +4,42 @@ from dataclasses import dataclass
 import re
 
 @dataclass(frozen=True)
+class ModelWeightArchitecture:
+    callable: str
+    kwargs: Optional[Dict[str, Any]]
+    sha256: Optional[str] = None
+    
+    @classmethod
+    def from_dict(cls, architecture_data: Dict) -> "ModelWeightArchitecture":
+        return cls(
+            callable=architecture_data.get("callable"),
+            kwargs=architecture_data.get("kwargs"),
+            sha256=architecture_data.get("sha256")
+        )
+
+@dataclass(frozen=True)
 class ModelWeights:
     source: str
     version_number: int
     version_type: str
     format: str
+    architecture: Optional[ModelWeightArchitecture] = None
 
     @classmethod
     def from_dict(cls, weight_entry: Dict) -> "ModelWeights":
         format_name, format_data = next(iter(weight_entry.items()))
+
+        architecture = (
+            ModelWeightArchitecture.from_dict(format_data["architecture"])
+            if "architecture" in format_data else None
+        )
         
         return cls(
             source=format_data.get("source"),
             version_number=ModelWeights._extract_version_number(format_data),
             version_type=ModelWeights._extract_version_type(format_data),
-            format=format_name
+            format=format_name,
+            architecture=architecture
         )
     
     @staticmethod

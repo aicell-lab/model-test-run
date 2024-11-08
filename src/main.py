@@ -8,26 +8,22 @@ from data.model_yaml_validation import ModelYamlValidation
 from packing.conda_packer import CondaPacker
 from model_test import run_model_tests
 
-def load_yaml(file_path: Path) -> Any:
-    try:
-        with file_path.open("r") as file:
-            data = yaml.safe_load(file)
-            return data
-    except FileNotFoundError:
-        print(f"File not found: {file_path}")
-    except yaml.YAMLError as e:
-        print(f"Error parsing YAML file: {e}")
-
 def run_tests(project: ModelProject) -> Tuple[bool, str]:
-    try:
-        #model_yaml = load_yaml(project.get_rdf_yaml_path())
-        #ModelYamlValidation(model_yaml).validate()
-        #CondaPacker(model_yaml).pack()
+    ModelYamlValidation(project.get_model_yaml()).validate()
+    #CondaPacker(model_yaml).pack()
+
+    if run_model_tests(project):
+        return True, ""
+
+    """try:
+        model_yaml = load_yaml(project.get_rdf_yaml_path())
+        ModelYamlValidation(model_yaml).validate()
+        CondaPacker(model_yaml).pack()
         if run_model_tests(project):
             return True, ""
     except ValueError as e:
-        return False, str(e)
-    return False, "Model tests failed unexpectedly."
+        return False, str(e) """
+    #return False, "Model tests failed unexpectedly."
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Run the script with a model URL.")

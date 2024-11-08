@@ -5,18 +5,21 @@ from packing.conda_env import get_conda_env, CondaEnv
 from data.model_value_converter import ModelValueConverter
 from data.model_values import ModelValues
 from pathlib import Path
+from packing.model_project import ModelProject
 
 class CondaFileHandler:
-    def __init__(self, model_yaml: Dict):
+    def __init__(self, model_yaml: Dict, project: ModelProject):
         self.values = ModelValues.from_dict(model_yaml)
         self.model_yaml = model_yaml
+        self.project = project
+        self._get_files_dir().mkdir(parents=True, exist_ok=True)
 
     def _get_conda_env(self) -> CondaEnv:
         weights_descr = ModelValueConverter(self.model_yaml).get_weights_descr()
         return get_conda_env(env_name=self.values.name, entry=weights_descr)
 
     def _get_files_dir(self) -> Path:
-        return Config.Storage.tmp_dir
+        return self.project.get_project_path() / "conda_files"
     
     def get_dependencies_path(self) -> Path:
         return self._get_files_dir() / f"{self.values.name}_deps.yml"
