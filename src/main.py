@@ -31,10 +31,10 @@ def start():
 
 def local_test():
     print(f"Running {inspect.currentframe().f_code.co_name}")
-    from local_test.local_tests import test_services_locally
     from local_test.dataset_id_retrieval import get_dataset_ids
-    #test_services_locally()
-    print(get_dataset_ids())
+    from local_test.dataset_id_test import test_dataset_id
+    for dataset_id in get_dataset_ids():
+        print(test_dataset_id(dataset_id))
 
 if __name__ == "__main__":
     local_test()
