@@ -32,7 +32,9 @@ def start():
 def local_test():
     print(f"Running {inspect.currentframe().f_code.co_name}")
     from local_test.local_tests import test_services_locally
-    test_services_locally()
+    from local_test.dataset_id_retrieval import get_dataset_ids
+    #test_services_locally()
+    print(get_dataset_ids())
 
 if __name__ == "__main__":
     local_test()

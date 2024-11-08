@@ -8,8 +8,6 @@ import requests
 from typing import Tuple
 
 def _get_model_yaml_url():
-    #record_id = "6647688"
-    #return f"https://zenodo.org/records/{record_id}/files/rdf.yaml"
     return "https://uk1s3.embassy.ebi.ac.uk/public-datasets/bioimage.io/chatty-frog/1/files/rdf.yaml"
 
 def _yaml_from_url(url):
@@ -17,17 +15,15 @@ def _yaml_from_url(url):
     response.raise_for_status()
     return yaml.safe_load(response.text)
 
-# Have function that tests everything and returns result and optional error message.
-
 def run_tests(rdf_yaml_url) -> Tuple[bool, str]:
-    #try:
-    model_yaml = _yaml_from_url(rdf_yaml_url)
-    ModelYamlValidation(model_yaml).validate()
-    CondaPacker(model_yaml).pack()
-    if run_model_tests(rdf_yaml_url):
-        return True, ""
-    #except ValueError as e:
-    #    return False, str(e)
+    try:
+        model_yaml = _yaml_from_url(rdf_yaml_url)
+        ModelYamlValidation(model_yaml).validate()
+        CondaPacker(model_yaml).pack()
+        if run_model_tests(rdf_yaml_url):
+            return True, ""
+    except ValueError as e:
+        return False, str(e)
     return False, "Model tests failed unexpectedly."
 
 def test_services_locally():
