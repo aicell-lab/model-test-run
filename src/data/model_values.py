@@ -57,8 +57,6 @@ class ModelZenodo:
                 dataset_id=dataset_id,
                 revision_id=revision_id
             )
-        else:
-            raise ValueError("No config_id found in the provided model_yaml.")
     
     @staticmethod
     def _extract_zenodo_id(model_yaml: Dict) -> Optional[str]:
@@ -83,7 +81,7 @@ class ModelZenodo:
 class ModelValues:
     name: str
     weights: List[ModelWeights]
-    zenodo: ModelZenodo
+    zenodo: Optional[ModelZenodo]
 
     @staticmethod
     def _extract_name(model_yaml: Dict):
