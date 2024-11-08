@@ -3,12 +3,13 @@ import conda_pack
 from typing import Dict
 from packing.conda_env_controller import CondaEnvController
 from packing.conda_file_handler import CondaFileHandler
+from packing.model_project import ModelProject
 
 class CondaPacker:
-    def __init__(self, model_yaml: Dict):
-        self.values = ModelValues.from_dict(model_yaml)
-        self.env_controller = CondaEnvController(model_yaml)
-        self.file_handler = CondaFileHandler(model_yaml)
+    def __init__(self, project: ModelProject):
+        self.values = project.get_model_yaml()
+        self.env_controller = CondaEnvController(self.values)
+        self.file_handler = CondaFileHandler(self.values)
 
     def _conda_pack(self) -> str:
         return conda_pack.pack(

@@ -5,6 +5,7 @@ from pathlib import Path
 from config import Config
 import zipfile
 import yaml
+from data.model_values import ModelValues
 
 class ModelProject:
     def __init__(self, model_url: HttpUrl):
@@ -23,6 +24,9 @@ class ModelProject:
 
     def get_model_yaml(self) -> Dict:
         return self._load_yaml(self.get_rdf_yaml_path())
+    
+    def get_model_values(self) -> ModelValues:
+        return ModelValues.from_dict(self.get_model_yaml())
 
     def get_project_path(self) -> Path:
         return self.project_path

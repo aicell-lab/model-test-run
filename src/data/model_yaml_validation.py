@@ -3,8 +3,8 @@ from data.model_values import ModelValues
 from data.model_value_converter import ModelValueConverter
 
 class ModelYamlValidation:
-    def __init__(self, model_yaml: Dict):
-        self.values = ModelValues.from_dict(model_yaml)
+    def __init__(self, values: ModelValues):
+        self.values = values
 
     def _check_weights(self):
         if not self.values.weights:

@@ -9,20 +9,20 @@ from packing.conda_packer import CondaPacker
 from model_test import run_model_tests
 
 def run_tests(project: ModelProject) -> Tuple[bool, str]:
-    ModelYamlValidation(project.get_model_yaml()).validate()
-    #CondaPacker(model_yaml).pack()
+    ModelYamlValidation(project.get_model_values()).validate()
+    #TODO: CondaPacker(project).pack()
 
     if run_model_tests(project):
         return True, ""
 
-    """try:
-        model_yaml = load_yaml(project.get_rdf_yaml_path())
-        ModelYamlValidation(model_yaml).validate()
-        CondaPacker(model_yaml).pack()
-        if run_model_tests(project):
-            return True, ""
-    except ValueError as e:
-        return False, str(e) """
+    #try:
+    #    model_yaml = load_yaml(project.get_rdf_yaml_path())
+    #    ModelYamlValidation(model_yaml).validate()
+    #    CondaPacker(model_yaml).pack()
+    #    if run_model_tests(project):
+    #        return True, ""
+    #except ValueError as e:
+    #    return False, str(e)
     #return False, "Model tests failed unexpectedly."
 
 def parse_args():

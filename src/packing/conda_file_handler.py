@@ -8,9 +8,9 @@ from pathlib import Path
 from packing.model_project import ModelProject
 
 class CondaFileHandler:
-    def __init__(self, model_yaml: Dict, project: ModelProject):
-        self.values = ModelValues.from_dict(model_yaml)
-        self.model_yaml = model_yaml
+    def __init__(self, project: ModelProject):
+        self.model_yaml = project.get_model_yaml()
+        self.values = ModelValues.from_dict(self.model_yaml)
         self.project = project
         self._get_files_dir().mkdir(parents=True, exist_ok=True)
 
