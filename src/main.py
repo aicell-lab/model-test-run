@@ -1,10 +1,6 @@
 import argparse
 from packing.model_project import ModelProject
 from typing import Tuple
-from pathlib import Path
-import yaml
-from typing import Any
-from data.model_yaml_validation import ModelYamlValidation
 from packing.conda_packer import CondaPacker
 from model_test import run_model_tests, print_model_test_result
 from quick_validate import validate_rdf
@@ -27,7 +23,7 @@ def run_tests(project: ModelProject) -> Tuple[bool, str]:
 
 def pack_and_publish(project: ModelProject):
     #TODO: CondaPacker(project).pack()
-    ...
+    CondaPacker(project).pack()
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Run the script with a model URL.")

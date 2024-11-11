@@ -3,6 +3,7 @@ from packing.conda_env import SupportedWeightsEntry
 from typing import Dict, List
 from data.model_values import ModelValues, ModelWeights
 from pydantic import HttpUrl
+from bioimageio.spec import load_description
 
 class ModelValueConverter:
     FORMAT_TO_WEIGHTS_ENTRY = {
