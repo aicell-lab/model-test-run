@@ -1,24 +1,34 @@
+#from bioimageio.spec.summary import ValidationSummary
 from bioimageio.core import test_model
-from bioimageio.spec.summary import ValidationSummary
 from packing.model_project import ModelProject
+from dataclasses import dataclass
+from typing import List
 
-def _print_result(r: ValidationSummary):
-    passed_details = [detail.name for detail in r.details if detail.status == 'passed']
-    failed_details = [detail.name for detail in r.details if detail.status != 'passed']
-    
-    print(f"Model '{r.name}': {r.status}")
-    
-    if passed_details:
-        print(f"{len(passed_details)} passed tests:")
-        for name in passed_details:
+@dataclass
+class ModelTestResult:
+    success: bool
+    passed_details: List[str]
+    failed_details: List[str]
+
+def print_model_test_result(result: ModelTestResult):
+    status = "passed" if result.success else "failed"
+    print(f"Model Test Result: {status}")
+    if result.passed_details:
+        print(f"{len(result.passed_details)} passed tests:")
+        for name in result.passed_details:
             print(f"  {name}")
-    
-    if failed_details:
-        print(f"{len(failed_details)} failed tests:")
-        for name in failed_details:
+    if result.failed_details:
+        print(f"{len(result.failed_details)} failed tests:")
+        for name in result.failed_details:
             print(f"  {name}")
 
-def run_model_tests(project: ModelProject) -> bool:
+def run_model_tests(project: ModelProject) -> ModelTestResult:
     result = test_model(source=project.get_rdf_yaml_path())
-    _print_result(result)
-    return result.status == 'passed'
+    passed_details = [detail.name for detail in result.details if detail.status == 'passed']
+    failed_details = [detail.name for detail in result.details if detail.status != 'passed']
+    
+    return ModelTestResult(
+        success=result.status == 'passed',
+        passed_details=passed_details,
+        failed_details=failed_details
+    )
