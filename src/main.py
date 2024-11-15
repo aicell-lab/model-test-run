@@ -10,7 +10,9 @@ def test_rdf_validity(project: ModelProject) -> bool:
     print(validation_result)
     if not validation_result.success:
         return False
-    model_test_result = run_model_tests(project)
+    
+    #TODO: Create Conda env manager
+    model_test_result = run_model_tests(project) # TODO: run the 2nd test using the generated conda environment.
     print_model_test_result(model_test_result)
     if not model_test_result.success:
         return False
