@@ -22,8 +22,9 @@ def run_tests(project: ModelProject) -> Tuple[bool, str]:
     return True, None
 
 def pack_and_publish(project: ModelProject):
-    #TODO: CondaPacker(project).pack()
-    CondaPacker(project).pack()
+    packer = CondaPacker(project)
+    packer.pack()
+    #TODO: publish conda package
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Run the script with a model URL.")
@@ -39,21 +40,6 @@ def get_project_from_args():
     return project
 
 if __name__ == "__main__":
-    """     from quick_test import validate
-    with Path("/tmp/model_projects/hiding-tiger/rdf.yaml").open("r") as file:
-        yaml_data = yaml.safe_load(file)
-    from bioimageio.spec import validate_format, ValidationContext, build_description, load_description
-    import yaml
-    from pathlib import Path
-    ctx = ValidationContext(perform_io_checks=False)
-    with ctx:
-        rd = build_description("/tmp/model_projects/hiding-tiger.zip")
-    print(rd)
-    available_weights = [value for _, value in rd.weights.model_dump().items() if value is not None]
-    from packing.conda_env import get_conda_env, CondaEnv
-    result = get_conda_env(entry=available_weights[0], env_name="test_name")
-    print(result) """
-
     project = get_project_from_args()
     test_success, test_message = run_tests(project)
     if test_success:
