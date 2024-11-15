@@ -8,7 +8,7 @@ from packing.model_project import ModelProject
 class CondaPacker:
     def __init__(self, project: ModelProject):
         self.values = project.get_model_values()
-        self.env_controller = CondaEnvController(project.get_model_yaml())
+        self.env_controller = CondaEnvController(project)
         self.file_handler = CondaFileHandler(project)
 
     def _conda_pack(self) -> str:
