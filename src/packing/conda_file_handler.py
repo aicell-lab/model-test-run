@@ -1,15 +1,10 @@
-from config import Config
 import yaml
-from typing import Dict
-from packing.conda_env import get_conda_env, CondaEnv
-from data.model_value_converter import ModelValueConverter
-from data.model_values import ModelValues
 from pathlib import Path
 from packing.model_project import ModelProject
 from typing import Union
 
 from bioimageio.spec import ResourceDescr, InvalidDescr, ValidationContext, load_description
-from bioimageio.spec.get_conda_env import get_conda_env
+from bioimageio.spec.get_conda_env import get_conda_env, BioimageioCondaEnv
 
 class CondaFileHandler:
     def __init__(self, project: ModelProject):
@@ -39,7 +34,7 @@ class CondaFileHandler:
     def retrieve_available_weights(rd: ResourceDescr):
         return [value for _, value in rd.weights.model_dump().items() if value is not None]
     
-    def retrieve_CondaEnv(self) -> CondaEnv:
+    def retrieve_CondaEnv(self) -> BioimageioCondaEnv:
         rd = self.retrieve_resource_description()
         rd.validation_summary.display()
         if isinstance(rd, InvalidDescr):
