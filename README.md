@@ -21,3 +21,6 @@ Here are the hypha services for model testing:
 ## Chat
 - append_chat_message # write to a chat file for this model and send email
 - list_chat_messages
+
+## Future
+- File edit feature coming from artifact manager.
