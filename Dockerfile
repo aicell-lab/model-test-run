@@ -9,7 +9,12 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install git+https://github.com/bioimage-io/spec-bioimage-io.git@main
 
-RUN python -c "from bioimageio.spec.get_conda_env import get_conda_env, BioimageioCondaEnv" 
+#Temp fix until next biomiageio.spec release
+RUN git clone --depth 1 https://github.com/bioimage-io/spec-bioimage-io.git /bioimageio-spec
+RUN cp -r /bioimageio-spec/bioimageio /usr/local/lib/python3.12/site-packages/
+
+#Check that get_conda_env exists
+RUN python -c "import bioimageio.spec.get_conda_env" 
 
 COPY . .
 
