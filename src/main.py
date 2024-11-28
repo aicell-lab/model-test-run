@@ -21,7 +21,7 @@ def test_rdf_validity(project: ModelProject) -> bool:
 def run_tests(project: ModelProject) -> Tuple[bool, str]:
     if not test_rdf_validity(project):
         return False, "RDF yaml failed validation tests"
-    return True, None
+    return True, ""
 
 def pack_and_publish(project: ModelProject):
     packer = CondaPacker(project)

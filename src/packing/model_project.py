@@ -23,16 +23,20 @@ class ModelProject:
             print(f"Error parsing YAML file: {e}")
 
     def get_model_yaml(self) -> Dict:
-        return self._load_yaml(self.get_rdf_yaml_path())
+        path = self.get_rdf_yaml_path()
+        if not path:
+            print(f"Error: get_model_yaml() path is empty")
+            return {}
+        return self._load_yaml(path)
     
     def get_model_values(self) -> ModelValues:
         return ModelValues.from_dict(self.get_model_yaml())
 
-    def get_project_path(self) -> Path:
+    def get_project_path(self) -> Optional[Path]:
         return self.project_path
 
-    def get_rdf_yaml_path(self) -> Path:
-        return self.project_path / "rdf.yaml"
+    def get_rdf_yaml_path(self) -> Optional[Path]:
+        return self.project_path / "rdf.yaml" if self.project_path else None
 
     def _get_unpack_dir(self) -> Optional[Path]:
         if not self.download_path:
@@ -46,6 +50,8 @@ class ModelProject:
         return unpack_dir
     
     def _extract_zipped_files(self, unpack_dir: Path):
+        if not self.download_path:
+            raise ValueError("Download path is None. Cannot extract files.")
         with zipfile.ZipFile(self.download_path, 'r') as zip_ref:
             unpack_dir_abs = unpack_dir.resolve()
             for member in zip_ref.infolist():
@@ -59,21 +65,22 @@ class ModelProject:
 
     def unpack_zip(self) -> Optional[Path]:
         unpack_dir = self._get_unpack_dir()
+        if not unpack_dir:
+            return None
         try:
             self._extract_zipped_files(unpack_dir)
             return unpack_dir
         except zipfile.BadZipFile:
             print(f"Failed to unpack zip file: {self.download_path}")
-            return None
         
     def download_model(self) -> Optional[Path]:
         model_dir = Config.Storage.tmp_dir / "model_projects"
         model_dir.mkdir(parents=True, exist_ok=True)
-        filename = Path(self.model_url).name
+        filename = Path(str(self.model_url)).name
         download_path = model_dir / filename
         
         try:
-            response = requests.get(self.model_url, stream=True)
+            response = requests.get(str(self.model_url), stream=True)
             response.raise_for_status()
             with open(download_path, "wb") as file:
                 for chunk in response.iter_content(chunk_size=8192):
